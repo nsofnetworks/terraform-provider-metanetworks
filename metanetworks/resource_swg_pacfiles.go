@@ -15,42 +15,29 @@ func resourceSwgPacFiles() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"action": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"advanced_threat_protection": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  true,
 			},
-			"exempt_sources": {
-				Type:     schema.TypeSet,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+			"apply_to_org": {
+				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"sources": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"forbidden_content_categories": {
+			"exempt_sources": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
-				MaxItems: 5,
 			},
 			"priority": {
 				Type:     schema.TypeInt,
 				Required: true,
-			},
-			"threat_category": {
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 			"created_at": {
 				Type:     schema.TypeString,
@@ -65,70 +52,64 @@ func resourceSwgPacFiles() *schema.Resource {
 				Computed: true,
 			},
 		},
-		Create: resourceSwgUrlFilteringRulesCreate,
-		Read:   resourceSwgUrlFilteringRulesRead,
-		Update: resourceSwgUrlFilteringRulesUpdate,
-		Delete: resourceSwgUrlFilteringRulesDelete,
+		Create: resourceSwgPacFilesCreate,
+		Read:   resourceSwgPacFilesRead,
+		Update: resourceSwgPacFilesUpdate,
+		Delete: resourceSwgPacFilesDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 	}
 }
 
-func resourceSwgUrlFilteringRulesCreate(d *schema.ResourceData, m interface{}) error {
+func resourceSwgPacFilesCreate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*Client)
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-	action := d.Get("action").(string)
-	advancedThreatProtection := d.Get("advanced_threat_protection").(bool)
 	enabled := d.Get("enabled").(bool)
 	priority := d.Get("priority").(int)
-	threatCategory := d.Get("threat_category").(string)
+	applyToOrg := d.Get("apply_to_org").(bool)
 	exemptSources := resourceTypeSetToStringSlice(d.Get("exempt_sources").(*schema.Set))
 	sources := resourceTypeSetToStringSlice(d.Get("sources").(*schema.Set))
-	forbiddenContentCategories := resourceTypeSetToStringSlice(d.Get("forbidden_content_categories").(*schema.Set))
 
-	swgUrlFilteringRules := SwgUrlFilteringRules{
-		Name:                       name,
-		Description:                description,
-		Action:                     action,
-		AdvancedThreatProtection:   advancedThreatProtection,
-		Enabled:                    enabled,
-		Priority:                   priority,
-		ThreatCategory:             threatCategory,
-		ExemptSources:              exemptSources,
-		Sources:                    sources,
-		ForbiddenContentCategories: forbiddenContentCategories,
+	swgPacFiles := SwgPacFiles{
+		Name:          name,
+		Description:   description,
+		Enabled:       enabled,
+		Priority:      priority,
+		ApplyToOrg:    applyToOrg,
+		ExemptSources: exemptSources,
+		Sources:       sources,
 	}
 
-	var newSwgUrlFilteringRules *SwgUrlFilteringRules
-	newSwgUrlFilteringRules, err := client.CreateSwgUrlFilteringRules(&swgUrlFilteringRules)
+	var newSwgPacFiles *SwgPacFiles
+	newSwgPacFiles, err := client.CreateSwgPacFiles(&swgPacFiles)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(newSwgUrlFilteringRules.ID)
+	d.SetId(newSwgPacFiles.ID)
 
-	err = swgUrlFilteringRulesToResource(d, newSwgUrlFilteringRules)
+	err = swgPacFilesToResource(d, newSwgPacFiles)
 	if err != nil {
 		return err
 	}
 
-	return resourceSwgUrlFilteringRulesRead(d, m)
+	return resourceSwgPacFilesRead(d, m)
 }
 
-func resourceSwgUrlFilteringRulesRead(d *schema.ResourceData, m interface{}) error {
+func resourceSwgPacFilesRead(d *schema.ResourceData, m interface{}) error {
 	client := m.(*Client)
 
-	var swgUrlFilteringRules *SwgUrlFilteringRules
-	swgUrlFilteringRules, err := client.GetSwgUrlFilteringRules(d.Id())
+	var swgPacFiles *SwgPacFiles
+	swgPacFiles, err := client.GetSwgPacFiles(d.Id())
 	if err != nil {
 		d.SetId("")
 		return nil
 	}
 
-	err = swgUrlFilteringRulesToResource(d, swgUrlFilteringRules)
+	err = swgPacFilesToResource(d, swgPacFiles)
 	if err != nil {
 		return err
 	}
@@ -136,67 +117,58 @@ func resourceSwgUrlFilteringRulesRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceSwgUrlFilteringRulesUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceSwgPacFilesUpdate(d *schema.ResourceData, m interface{}) error {
 	client := m.(*Client)
 
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-	action := d.Get("action").(string)
-	advancedThreatProtection := d.Get("advanced_threat_protection").(bool)
 	enabled := d.Get("enabled").(bool)
 	priority := d.Get("priority").(int)
-	threatCategory := d.Get("threat_category").(string)
+	applyToOrg := d.Get("apply_to_org").(bool)
 	exemptSources := resourceTypeSetToStringSlice(d.Get("exempt_sources").(*schema.Set))
 	sources := resourceTypeSetToStringSlice(d.Get("sources").(*schema.Set))
-	forbiddenContentCategories := resourceTypeSetToStringSlice(d.Get("forbidden_content_categories").(*schema.Set))
 
-	swgUrlFilteringRules := SwgUrlFilteringRules{
-		Name:                       name,
-		Description:                description,
-		Action:                     action,
-		AdvancedThreatProtection:   advancedThreatProtection,
-		Enabled:                    enabled,
-		Priority:                   priority,
-		ThreatCategory:             threatCategory,
-		ExemptSources:              exemptSources,
-		Sources:                    sources,
-		ForbiddenContentCategories: forbiddenContentCategories,
+	swgPacFiles := SwgPacFiles{
+		Name:          name,
+		Description:   description,
+		Enabled:       enabled,
+		Priority:      priority,
+		ApplyToOrg:    applyToOrg,
+		ExemptSources: exemptSources,
+		Sources:       sources,
 	}
 
-	var updatedSwgUrlFilteringRules *SwgUrlFilteringRules
-	updatedSwgUrlFilteringRules, err := client.UpdateSwgUrlFilteringRules(d.Id(), &swgUrlFilteringRules)
+	var updatedSwgPacFiles *SwgPacFiles
+	updatedSwgPacFiles, err := client.UpdateSwgPacFiles(d.Id(), &swgPacFiles)
 	if err != nil {
 		return err
 	}
 
-	d.SetId(updatedSwgUrlFilteringRules.ID)
+	d.SetId(updatedSwgPacFiles.ID)
 
-	err = swgUrlFilteringRulesToResource(d, updatedSwgUrlFilteringRules)
+	err = swgPacFilesToResource(d, updatedSwgPacFiles)
 	if err != nil {
 		return err
 	}
 
-	return resourceSwgUrlFilteringRulesRead(d, m)
+	return resourceSwgPacFilesRead(d, m)
 }
 
-func resourceSwgUrlFilteringRulesDelete(d *schema.ResourceData, m interface{}) error {
+func resourceSwgPacFilesDelete(d *schema.ResourceData, m interface{}) error {
 	client := m.(*Client)
 
-	err := client.DeleteSwgUrlFilteringRules(d.Id())
+	err := client.DeleteSwgPacFiles(d.Id())
 	return err
 }
 
-func swgUrlFilteringRulesToResource(d *schema.ResourceData, m *SwgUrlFilteringRules) error {
+func swgPacFilesToResource(d *schema.ResourceData, m *SwgPacFiles) error {
 	d.Set("name", m.Name)
 	d.Set("description", m.Description)
-	d.Set("action", m.Action)
-	d.Set("advanced_threat_protection", m.AdvancedThreatProtection)
 	d.Set("enabled", m.Enabled)
 	d.Set("priority", m.Priority)
-	d.Set("threat_category", m.ThreatCategory)
-	d.Set("exempt_sources", m.ExemptSources)
+	d.Set("apply_to_org", m.ExemptSources)
 	d.Set("sources", m.Sources)
-	d.Set("forbidden_content_categories", m.ForbiddenContentCategories)
+	d.Set("exempt_sources", m.ExemptSources)
 
 	d.SetId(m.ID)
 

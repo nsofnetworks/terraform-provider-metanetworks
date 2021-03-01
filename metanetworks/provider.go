@@ -58,7 +58,6 @@ func Provider() *schema.Provider {
 			"metanetworks_posture_check":                resourcePostureCheck(),
 			"metanetworks_device_settings":              resourceDeviceSettings(),
 			"metanetworks_user_settings":                resourceUserSettings(),
-			"metanetworks_notification_channels":        resourceNotificationChannels(),
 			"metanetworks_version_controls":             resourceVersionControls(),
 			"metanetworks_swg_threat_categories":        resourceSwgThreatCategories(),
 			"metanetworks_swg_content_categories":       resourceSwgContentCategories(),
