@@ -18,6 +18,7 @@ type SwgPacFiles struct {
 	Sources       []string `json:"sources,omitempty"`
 	ExemptSources []string `json:"exempt_sources,omitempty"`
 	Priority      int      `json:"priority"`
+	HasContent    bool     `json:"has_content,omitempty" type:"bool"`
 	CreatedAt     string   `json:"created_at,omitempty" meta_api:"read_only"`
 	ID            string   `json:"id,omitempty" meta_api:"read_only"`
 	ModifiedAt    string   `json:"modified_at,omitempty" meta_api:"read_only"`

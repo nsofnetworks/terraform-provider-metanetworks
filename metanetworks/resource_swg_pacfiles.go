@@ -39,6 +39,11 @@ func resourceSwgPacFiles() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"has_content": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -69,6 +74,7 @@ func resourceSwgPacFilesCreate(d *schema.ResourceData, m interface{}) error {
 	description := d.Get("description").(string)
 	enabled := d.Get("enabled").(bool)
 	priority := d.Get("priority").(int)
+	hascontent := d.Get("has_content").(bool)
 	applyToOrg := d.Get("apply_to_org").(bool)
 	exemptSources := resourceTypeSetToStringSlice(d.Get("exempt_sources").(*schema.Set))
 	sources := resourceTypeSetToStringSlice(d.Get("sources").(*schema.Set))
@@ -78,6 +84,7 @@ func resourceSwgPacFilesCreate(d *schema.ResourceData, m interface{}) error {
 		Description:   description,
 		Enabled:       enabled,
 		Priority:      priority,
+		HasContent:    hascontent,
 		ApplyToOrg:    applyToOrg,
 		ExemptSources: exemptSources,
 		Sources:       sources,
@@ -124,6 +131,7 @@ func resourceSwgPacFilesUpdate(d *schema.ResourceData, m interface{}) error {
 	description := d.Get("description").(string)
 	enabled := d.Get("enabled").(bool)
 	priority := d.Get("priority").(int)
+	hascontent := d.Get("has_content").(bool)
 	applyToOrg := d.Get("apply_to_org").(bool)
 	exemptSources := resourceTypeSetToStringSlice(d.Get("exempt_sources").(*schema.Set))
 	sources := resourceTypeSetToStringSlice(d.Get("sources").(*schema.Set))
@@ -133,6 +141,7 @@ func resourceSwgPacFilesUpdate(d *schema.ResourceData, m interface{}) error {
 		Description:   description,
 		Enabled:       enabled,
 		Priority:      priority,
+		HasContent:    hascontent,
 		ApplyToOrg:    applyToOrg,
 		ExemptSources: exemptSources,
 		Sources:       sources,
@@ -166,6 +175,7 @@ func swgPacFilesToResource(d *schema.ResourceData, m *SwgPacFiles) error {
 	d.Set("description", m.Description)
 	d.Set("enabled", m.Enabled)
 	d.Set("priority", m.Priority)
+	d.Set("has_content", m.Priority)
 	d.Set("apply_to_org", m.ExemptSources)
 	d.Set("sources", m.Sources)
 	d.Set("exempt_sources", m.ExemptSources)
