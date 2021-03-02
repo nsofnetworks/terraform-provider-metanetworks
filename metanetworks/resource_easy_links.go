@@ -66,89 +66,6 @@ func resourceEasyLinks() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"proxy": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enterprise_access": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"hosts": {
-							Type:     schema.TypeList,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-							Optional: true,
-						},
-						"http_host_header": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"navigator_compatibility": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"rewrite_content_types": {
-							Type:     schema.TypeList,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-							Optional: true,
-						},
-						"rewrite_hosts": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"rewrite_hosts_client": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"rewrite_hosts_service_worker": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"rewrite_http": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"shared_cookies": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"strip_origin_header": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-						"strip_user_agent_header": {
-							Type:     schema.TypeBool,
-							Default:  false,
-							Optional: true,
-						},
-					},
-				},
-			},
-			"rdp": &schema.Schema{
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"remote_app": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-						"server_keyboard_layout": {
-							Type:     schema.TypeString,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-							Optional: true,
-						},
-					},
-				},
-			},
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -189,8 +106,6 @@ func resourceEasyLinksCreate(d *schema.ResourceData, m interface{}) error {
 	enablesni := d.Get("enable_sni").(bool)
 	icon := d.Get("icon").(string)
 	rootpath := d.Get("root_path").(string)
-	proxy := d.Get("proxy").([]Proxy)
-	rdp := d.Get("rdp").([]RDP)
 
 	easyLinks := EasyLinks{
 		Name:            name,
@@ -207,8 +122,6 @@ func resourceEasyLinksCreate(d *schema.ResourceData, m interface{}) error {
 		EnableSNI:       enablesni,
 		Icon:            icon,
 		RoothPath:       rootpath,
-		Proxy:           proxy,
-		RDP:             rdp,
 	}
 
 	var newEasyLinks *EasyLinks
@@ -259,8 +172,6 @@ func resourceEasyLinksUpdate(d *schema.ResourceData, m interface{}) error {
 	enablesni := d.Get("enable_sni").(bool)
 	icon := d.Get("icon").(string)
 	rootpath := d.Get("root_path").(string)
-	proxy := d.Get("proxy").([]Proxy)
-	rdp := d.Get("rdp").([]RDP)
 
 	easyLinks := EasyLinks{
 		Name:            name,
@@ -277,8 +188,6 @@ func resourceEasyLinksUpdate(d *schema.ResourceData, m interface{}) error {
 		EnableSNI:       enablesni,
 		Icon:            icon,
 		RoothPath:       rootpath,
-		Proxy:           proxy,
-		RDP:             rdp,
 	}
 
 	var updatedEasyLinks *EasyLinks
@@ -319,8 +228,6 @@ func easyLinksToResource(d *schema.ResourceData, m *EasyLinks) error {
 	d.Set("enable_sni", m.EnableSNI)
 	d.Set("icon", m.Icon)
 	d.Set("root_path", m.RoothPath)
-	d.Set("proxy", m.Proxy)
-	d.Set("rdp", m.RDP)
 	d.Set("created_at", m.CreatedAt)
 	d.Set("modified_at", m.ModifiedAt)
 	d.Set("org_id", m.OrgID)
