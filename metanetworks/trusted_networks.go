@@ -11,22 +11,23 @@ const (
 
 // TrustedNetworks ...
 type TrustedNetworks struct {
-	Name            string     `json:"name"`
-	Description     string     `json:"description,omitempty"`
-	Enabled         bool       `json:"enabled" type:"bool"`
-	ApplyToOrg      bool       `json:"apply_to_org"`
-	ExemptEntities  []string   `json:"exempt_entities,omitempty"`
-	ApplyToEntities []string   `json:"apply_to_entities,omitempty"`
-	Criteria        []Criteria `json:"criteria,omitempty"`
-	CreatedAt       string     `json:"created_at,omitempty" meta_api:"read_only"`
-	ID              string     `json:"id,omitempty" meta_api:"read_only"`
-	ModifiedAt      string     `json:"modified_at,omitempty" meta_api:"read_only"`
+	Name            string        `json:"name"`
+	Description     string        `json:"description,omitempty"`
+	Enabled         bool          `json:"enabled" type:"bool"`
+	ApplyToOrg      bool          `json:"apply_to_org"`
+	ExemptEntities  []string      `json:"exempt_entities,omitempty"`
+	ApplyToEntities []string      `json:"apply_to_entities,omitempty"`
+	Criteria        []interface{} `json:"criteria,omitempty"`
+	CreatedAt       string        `json:"created_at,omitempty" meta_api:"read_only"`
+	ID              string        `json:"id,omitempty" meta_api:"read_only"`
+	ModifiedAt      string        `json:"modified_at,omitempty" meta_api:"read_only"`
 }
 
 // Criteria ...
 type Criteria struct {
-	ExternalIPConfig      []ExternalIPConfig
-	ResolvedAddressConfig []ResolvedAddressConfig
+	ExternalIPConfig      []ExternalIPConfig      `json:"external_ip_config"`
+	ResolvedAddressConfig []ResolvedAddressConfig `json:"resolved_address_config"`
+	Type                  string                  `json:"type,"`
 }
 
 // ExternalIPConfig ...

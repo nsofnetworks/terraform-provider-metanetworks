@@ -7,50 +7,57 @@ import (
 func resourceTrustedNetworks() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"criteria": &schema.Schema{
+			"criteria": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"external_ip_config": &schema.Schema{
+						"external_ip_config": {
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"addresses_ranges": &schema.Schema{
+									"addresses_ranges": {
 										Type:     schema.TypeList,
-										Elem:     &schema.Schema{Type: schema.TypeString},
 										Required: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 								},
 							},
 						},
-						"resolved_address_config": &schema.Schema{
+						"resolved_address_config": {
 							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"addresses_ranges": {
 										Type:     schema.TypeList,
-										Elem:     &schema.Schema{Type: schema.TypeList},
-										Optional: true,
+										Required: true,
+										Elem: &schema.Schema{
+											Type: schema.TypeString,
+										},
 									},
 									"hostname": {
 										Type:     schema.TypeString,
-										Elem:     &schema.Schema{Type: schema.TypeString},
 										Required: true,
 									},
 								},
 							},
 						},
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
 					},
 				},
 			},
-			"name": &schema.Schema{
+			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"description": &schema.Schema{
+			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -59,37 +66,37 @@ func resourceTrustedNetworks() *schema.Resource {
 				Default:  true,
 				Optional: true,
 			},
-			"apply_to_org": &schema.Schema{
+			"apply_to_org": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"apply_to_entities": &schema.Schema{
+			"apply_to_entities": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"exempt_entities": &schema.Schema{
+			"exempt_entities": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"created_at": &schema.Schema{
+			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"modified_at": &schema.Schema{
+			"modified_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"id": &schema.Schema{
+			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},
-		Create: resourceVersionControlsCreate,
-		Read:   resourceVersionControlsRead,
-		Update: resourceVersionControlsUpdate,
-		Delete: resourceVersionControlsDelete,
+		Create: resourceTrustedNetworksCreate,
+		Read:   resourceTrustedNetworksRead,
+		Update: resourceTrustedNetworksUpdate,
+		Delete: resourceTrustedNetworksDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -105,7 +112,7 @@ func resourceTrustedNetworksCreate(d *schema.ResourceData, m interface{}) error 
 	applyToOrg := d.Get("apply_to_org").(bool)
 	applyToEntities := resourceTypeSetToStringSlice(d.Get("apply_to_entities").(*schema.Set))
 	exemptEntities := resourceTypeSetToStringSlice(d.Get("exempt_entities").(*schema.Set))
-	criteria := d.Get("criteria").([]Criteria)
+	criteria := d.Get("criteria").([]interface{})
 
 	trustedNetworks := TrustedNetworks{
 		Name:            name,
@@ -159,7 +166,7 @@ func resourceTrustedNetworksUpdate(d *schema.ResourceData, m interface{}) error 
 	applyToOrg := d.Get("apply_to_org").(bool)
 	applyToEntities := resourceTypeSetToStringSlice(d.Get("apply_to_entities").(*schema.Set))
 	exemptEntities := resourceTypeSetToStringSlice(d.Get("exempt_entities").(*schema.Set))
-	criteria := d.Get("criteria").([]Criteria)
+	criteria := d.Get("criteria").([]interface{})
 
 	trustedNetworks := TrustedNetworks{
 		Name:            name,
@@ -205,6 +212,7 @@ func trustedNetworksToResource(d *schema.ResourceData, m *TrustedNetworks) error
 	d.Set("apply_to_org", m.ApplyToOrg)
 	d.Set("apply_to_entities", m.ApplyToEntities)
 	d.Set("exempt_entities", m.ExemptEntities)
+	d.Set("criteria", m.Criteria)
 	d.Set("created_at", m.CreatedAt)
 	d.Set("modified_at", m.ModifiedAt)
 	d.Set("criteria", m.CreatedAt)
