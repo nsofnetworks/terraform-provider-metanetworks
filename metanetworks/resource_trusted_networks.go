@@ -7,17 +7,17 @@ import (
 func resourceTrustedNetworks() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"criteria": {
+			"criteria": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"external_ip_config": {
+						"external_ip_config": &schema.Schema{
 							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"addresses_ranges": {
+									"addresses_ranges": &schema.Schema{
 										Type:     schema.TypeList,
 										Required: true,
 										Elem: &schema.Schema{
@@ -27,68 +27,68 @@ func resourceTrustedNetworks() *schema.Resource {
 								},
 							},
 						},
-						"resolved_address_config": {
+						"resolved_address_config": &schema.Schema{
 							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
-									"addresses_ranges": {
+									"addresses_ranges": &schema.Schema{
 										Type:     schema.TypeList,
 										Required: true,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
 									},
-									"hostname": {
+									"hostname": &schema.Schema{
 										Type:     schema.TypeString,
 										Required: true,
 									},
 								},
 							},
 						},
-						"type": {
+						"type": &schema.Schema{
 							Type:     schema.TypeString,
-							Required: true,
+							Optional: true,
 						},
 					},
 				},
 			},
-			"name": {
+			"name": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"description": {
+			"description": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"enabled": {
+			"enabled": &schema.Schema{
 				Type:     schema.TypeBool,
 				Default:  true,
 				Optional: true,
 			},
-			"apply_to_org": {
+			"apply_to_org": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"apply_to_entities": {
+			"apply_to_entities": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"exempt_entities": {
+			"exempt_entities": &schema.Schema{
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
-			"created_at": {
+			"created_at": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"modified_at": {
+			"modified_at": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"id": {
+			"id": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},
